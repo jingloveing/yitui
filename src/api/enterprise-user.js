@@ -25,5 +25,13 @@ export default {
     return axios.get('/admin/enterprise_user/delete', {
       params: { userId: userId }
     })
+  },
+
+  enableFeature (params) {
+    return axios.post('/admin/enterprise_user/enable/feature', params)
+  },
+
+  disableFeature (params) {
+    return axios.post('/admin/enterprise_user/disable/feature', params)
   }
 }

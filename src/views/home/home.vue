@@ -24,7 +24,7 @@
             <div class="col-md-3">
               <p><span class="box-card-num" id="userDay">{{ [enterprise.payTime, Date.now()] | formatDurationAsDay }}</span>天</p>
               <p><span class="box-card-num" id="restTime">{{ [Date.now(), enterprise.expireAt]  | formatDurationAsDay }}</span>天</p>
-              <p><span class="box-card-num customerNumber">{{ enterprise.cardUsed }}</span>人</p>
+              <p><span class="box-card-num customerNumber">0</span>人</p>
             </div>
             <div class="col-md-3 box-card-time">
               <p><span id="payTime">{{ enterprise.payTime | formatDate }}</span>开通</p>

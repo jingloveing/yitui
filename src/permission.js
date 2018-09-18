@@ -3,7 +3,7 @@ import store from './store'
 import NProgress from 'nprogress' // Progress 进度条
 import 'nprogress/nprogress.css'// Progress 进度条样式
 import { Message } from 'element-ui'
-// import { getSessionId } from '@/utils/auth' // 验权
+import { getSessionId } from '@/utils/auth' // 验权
 
 const whiteList = ['Login', 'NotFound', 'Forbidden'] // 不重定向白名单
 router.beforeEach((to, from, next) => {
@@ -29,6 +29,33 @@ router.beforeEach((to, from, next) => {
     next()
     NProgress.done()
   }
+
+  // if (getSessionId()) {
+  //   if (to.path === '/login') {
+  //     next({ path: '/' })
+  //     NProgress.done()
+  //   } else {
+  //     if (!store.getters.userId) {
+  //       store.dispatch('GetInfo').then(res => { // 拉取用户信息
+  //         next()
+  //       }).catch((err) => {
+  //         store.dispatch('FedLogOut').then(() => {
+  //           Message.error(err || 'Verification failed, please login again')
+  //           next({ path: '/' })
+  //         })
+  //       })
+  //     } else {
+  //       next()
+  //     }
+  //   }
+  // } else {
+  //   if (whiteList.indexOf(to.path) !== -1) {
+  //     next()
+  //   } else {
+  //     next('/login')
+  //     NProgress.done()
+  //   }
+  // }
 })
 
 function checkLogin (from, to) {

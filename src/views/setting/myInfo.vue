@@ -1,31 +1,29 @@
 <template>
   <div class="myInfo">
     <div class="title">修改密码</div>
-    <el-form :model="formData" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-      <el-form-item label="用户名" prop="loginName">
-        <el-input v-model="formData.loginName"></el-input>
+    <el-form :model="formData" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm"
+             @submit.native="submitForm('ruleForm')"
+             @submit.native.prevent>
+      <el-form-item label="昵称" prop="nickName">
+        <el-input v-model="formData.nickName"></el-input>
       </el-form-item>
-      <el-form-item label="昵称" prop="tel">
-        <el-input v-model="formData.tel"></el-input>
-      </el-form-item>
-      <el-form-item label="头像" prop="department">
+      <el-form-item label="头像" prop="avatar">
         <el-upload
           class="avatar-uploader"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :show-file-list="false"
-          :on-success="handleAvatarSuccess">
-          <img v-if="imageUrl" :src="imageUrl" class="avatar">
+          :action="uploadUrl"
+          :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+          <img v-if="formData.avatar" :src="formData.avatar" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>
-      <el-form-item label="手机" prop="address">
-        <el-input v-model="formData.address"></el-input>
+      <el-form-item label="手机" prop="mobile">
+        <el-input v-model="formData.mobile" disabled></el-input>
       </el-form-item>
-      <el-form-item label="邮箱" prop="openCard">
-        <el-input v-model="formData.openCard"></el-input>
+      <el-form-item label="邮箱" prop="email">
+        <el-input v-model="formData.email"></el-input>
       </el-form-item>
       <el-form-item style="display: flex;" class="btn-box">
-        <button @click.native.prevent="toRegister()" :loading="loading" class="my-btn save">确认修改</button>
+        <el-button type="primary" native-type="submit" :loading="loading" class="my-btn save">确认修改</el-button>
         <button @click="resetForm('ruleForm')" class="my-btn reset">重新填写</button>
       </el-form-item>
     </el-form>
@@ -34,57 +32,78 @@
 </template>
 
 <script>
+  import {mapGetters} from 'vuex'
+
   export default {
     name: "myInfo",
     data() {
       return {
+        uploadUrl: process.env.BASE_URL + '/oss/upload',
         loading:false,
         formData: {
-          loginName: '',
-          tel: '',
-          department: '',
-          address: '',
-          openCard: ''
+          nickName: '',
+          avatar: '',
+          mobile: '',
+          email: ''
         },
         rules: {
-          loginName: [
+          nickName: [
             { required: true, message: '请输入登录名称', trigger: 'blur' },
           ],
-          tel: [
+          avatar: [
+            { required: true, message: '请输入头像', trigger: 'blur' },
+          ],
+          mobile: [
             { required: true, message: '请输入手机号', trigger: 'blur' },
-          ],
-          department: [
-            { required: true, message: '请输入公司名称', trigger: 'blur' },
-          ],
-          address: [
-            { required: true, message: '请输入公司地址', trigger: 'blur' },
-          ],
-          openCard: [
-            { required: true, message: '请输入名片数量', trigger: 'blur' },
-          ],
+          ]
         }
       };
     },
+    computed: {
+      ...mapGetters([
+        'user',
+      ])
+    },
+    created () {
+      this.$store.dispatch('GetUser').then(res => {
+        this.formData = {
+          nickName: res.nickName,
+          avatar: res.avatar,
+          mobile: res.mobile,
+          email: res.email,
+        }
+      });
+    },
     methods: {
-      handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
+      handleAvatarSuccess (res, file) {
+        this.formData.avatar = res.url
+      },
+      beforeAvatarUpload (file) {
+        const isImg = file.type === 'image/jpeg' || 'image/png'
+        const isLt2M = file.size / 1024 / 1024 < 2
+
+        if (!isImg) {
+          this.$message.error('上传图片只能是 JPG、PNG 格式!')
+        }
+        if (!isLt2M) {
+          this.$message.error('上传图片大小不能超过 2MB!')
+        }
+        return isImg && isLt2M
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();
       },
-      toRegister() {
+      submitForm() {
         this.$refs.ruleForm.validate(valid => {
           if (valid) {
             this.loading = true
-            this.$store.dispatch('Register', this.formData).then((res) => {
+            this.$store.dispatch('UpdateUser', this.formData).then((res) => {
               this.loading = false
               this.$message({
-                message: res.data.message,
+                message: '修改成功',
                 type: 'success',
                 duration: 5 * 1000
               })
-
-
             }).catch(() => {
               this.loading = false
             })

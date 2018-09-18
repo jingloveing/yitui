@@ -1,4 +1,5 @@
 import axios from 'axios/index'
+import router from '@/router'
 import store from '@/store'
 
 export default {
@@ -28,7 +29,7 @@ export default {
       return res
     }, error => {
       if (error.response && error.response.status === 401) {
-        router.push('/401')
+        router.push('/login')
       }
 
       return Promise.reject(error)

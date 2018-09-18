@@ -99,6 +99,25 @@ const actions = {
         return user
       })
     })
+  },
+  UpdateUser ({ commit }, user) {
+    return authApi.update(user).then(res => {
+      commit('SET_USER', res.data)
+
+      return res.data
+    })
+  },
+  ChangePassword ({ commit }, info) {
+    return authApi.changePassword(info).then(res => {
+      return res.data
+    })
+  },
+  UpdateEnterprise ({ commit }, enterprise) {
+    return enterpriseApi.update(enterprise).then(res => {
+      commit('SET_ENTERPRISE', res.data)
+
+      return res.data
+    })
   }
 
 }
