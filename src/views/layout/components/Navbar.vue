@@ -1,28 +1,34 @@
 <template>
-  <div>
-    <el-menu class="navbar" mode="horizontal">
+  <div class="navbars-box">
+    <el-menu class="navbars" mode="horizontal">
       <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
+      <breadcrumb class="breadcrumb-container"/>
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar" :onerror="defaultImg">
-          <span class="name" v-text="name"></span>
+          <img :src="user.avatar" class="user-avatar" :onerror="defaultImg">
+          <span class="name" v-text="user.nickName"></span>
           <i class="el-icon-caret-bottom"/>
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link class="inlineBlock" to="/">
+          <router-link class="inlineBlock" to="/setting/myInfo">
             <el-dropdown-item>
-              Home
+              基本资料
+            </el-dropdown-item>
+          </router-link>
+          <router-link class="inlineBlock" to="/setting/changePassword">
+            <el-dropdown-item>
+              修改密码
             </el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>
-            <span style="display:block;" @click="logout">LogOut</span>
+            <span style="display:block;text-align: center;" @click="logout">退出</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </el-menu>
-    <div class="breadcrumb" v-show="this.$route.meta.showBreadcrumb!==true">
-      <breadcrumb class="breadcrumb-container"/>
-    </div>
+    <!--<div class="my-breadcrumb" v-show="this.$route.meta.showBreadcrumb!==true">-->
+
+    <!--</div>-->
   </div>
 </template>
 
@@ -38,14 +44,13 @@ export default {
   },
   data(){
     return{
-      defaultImg:'this.src="' + require('../../../assets/default_user.png') + '"'
+      defaultImg:'this.src="' + require('../../../assets/img/default_user.png') + '"'
     }
   },
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar',
-      'name'
+      'user'
     ])
   },
   methods: {
@@ -56,16 +61,20 @@ export default {
       this.$store.dispatch('LogOut').then(() => {
         location.reload() // 为了重新实例化vue-router对象 避免bug
       })
-    }
+    },
+  },
+  created(){
+
   }
 }
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.navbar {
+.navbars {
   height: 60px;
   line-height: 60px;
   border-radius: 0px !important;
+
   .hamburger-container {
     line-height: 68px;
     height: 60px;
@@ -110,18 +119,17 @@ export default {
   }
 
 }
-.breadcrumb{
-  width:100%;
-  height:48px;
-  line-height: 48px;
-  background:rgba(255,255,255,1);
-  font-size:14px;
-  font-weight:400;
-  color:rgba(136,136,136,1)
-}
+/*.my-breadcrumb{*/
+  /*width:100%;*/
+  /*height:48px;*/
+  /*line-height: 48px;*/
+  /*background:rgba(255,255,255,1);*/
+  /*font-size:14px;*/
+  /*font-weight:400;*/
+  /*color:rgba(136,136,136,1)*/
+/*}*/
 .breadcrumb-container{
-  line-height: 48px;margin-left: 47px;
+  line-height: 48px;
 }
-
 </style>
 

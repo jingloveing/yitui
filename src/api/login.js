@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function login(tel, password) {
   return request({
-    url: '/admin/adminLogin',
+    url: '/user/login',
     method: 'post',
     params: {
       tel,
@@ -11,11 +11,13 @@ export function login(tel, password) {
   })
 }
 
-export function getInfo(token) {
+export function getInfo(id) {
   return request({
-    url: '/user/info',
-    method: 'get',
-    params: { token }
+    url: '/com/Enterprise/findByEnterPrise',
+    method: 'post',
+    params: {
+      id
+    }
   })
 }
 

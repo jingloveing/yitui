@@ -1,35 +1,24 @@
 <template>
-  <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
-      <img src="../../assets/login-logo.png" alt="" class="logo">
-      <h3 class="title">后台管理系统</h3>
-      <el-form-item prop="username" style="border-bottom: 1px solid #fff;">
-        <span class="svg-container svg-container_login">
-          <svg-icon icon-class="logo_user" />
-        </span>
-        <el-input v-model="loginForm.username" name="username" type="text" auto-complete="off" placeholder="Username" />
-      </el-form-item>
-      <el-form-item prop="password" style="border-bottom: 1px solid #fff;">
-        <span class="svg-container">
-          <svg-icon icon-class="password" />
-        </span>
-        <el-input
-          :type="pwdType"
-          v-model="loginForm.password"
-          name="password"
-          auto-complete="off"
-          placeholder="Password"
-          @keyup.enter.native="handleLogin" />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon icon-class="eye" />
-        </span>
-      </el-form-item>
-      <el-form-item>
-        <el-button :loading="loading" type="primary" style="width:100%;background: rgba(29,103,68,1);border-color: rgba(29,103,68,1);height: 41px;" @click.native.prevent="handleLogin">
-          LOGIN
-        </el-button>
-      </el-form-item>
-    </el-form>
+  <div class="wrap">
+    <header class="sign-in">
+      <img src="../../assets/img/logo.jpg" />
+      <span class="app-name">企业后台管理系统</span>
+    </header>
+    <div class="big-box">
+      <div class="login-box">
+        <h3 class="title">登录</h3>
+
+        <div class="el-form-item__content">
+          <img src="../../assets/img/person.png" class="input_icon" />
+          <input id="userphone" type="text" class="el-input__inner" placeholder="账号" v-model="loginForm.username"/>
+        </div>
+        <div class="el-form-item__content">
+          <img src="../../assets/img/suo.png" class="input_icon" />
+          <input id="password" type="password" class="el-input__inner" placeholder="密码" v-model="loginForm.password" />
+        </div>
+        <button id="btn-login" class="el-button" @click="handleLogin()">登录</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -51,132 +40,148 @@ export default {
       loginForm: {
         username: '',
         password: ''
-      },
-      loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePass }]
-      },
-      loading: false,
-      pwdType: 'password'
+      }
     }
   },
   methods: {
-    showPwd() {
-      if (this.pwdType === 'password') {
-        this.pwdType = ''
-      } else {
-        this.pwdType = 'password'
-      }
-    },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('Login', this.loginForm).then((res) => {
-            this.loading = false
-            this.$router.push({ path: '/home' })
-          }).catch(() => {
-            this.loading = false
-          })
-
-        } else {
-          console.log('error submit!!')
-          return false
+      if(!this.loginForm.username){
+        this.$message({
+          message:'请输入用户名',
+          type: 'error',
+          duration: 5 * 1000
+        })
+        return
+      }
+      if(!this.loginForm.password){
+        this.$message({
+          message:'请输入密码',
+          type: 'error',
+          duration: 5 * 1000
+        })
+        return
+      }
+      this.$store.dispatch('Login', this.loginForm).then((res) => {
+        if(res.role=='AGENCY'){
+          this.$router.push({ path: '/company/register' })
+        }else{
+          this.$router.push({ path: '/home' })
         }
+
+      }).catch(res => {
+        console.log(res)
+        this.$message({
+          message: res.response && res.response.data.message || '登录失败',
+          type: 'error',
+          duration: 5 * 1000
+        })
       })
     }
   }
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss">
-$bg:#2d3a4b;
-$light_gray:#eee;
-
-/* reset element-ui css */
-.login-container {
-  .el-input {
-    display: inline-block;
-    height: 47px;
-    width: 85%;
-    input {
-      background: transparent;
-      border: 0px;
-      -webkit-appearance: none;
-      border-radius: 0px;
-      padding: 12px 5px 12px 15px;
-      color: $light_gray;
-      height: 47px;
-      &:-webkit-autofill {
-        -webkit-box-shadow: 0 0 0px 1000px rgba(1, 1, 1,.23) inset !important;
-        background-color: rgba(250, 250, 250,0) !important;
-        -webkit-text-fill-color: #fff !important;
-      }
-    }
-  }
-  .el-form-item {
-    color: #454545;
-    margin:0 auto 22px;
-    width: 278px;
-  }
-}
-
-</style>
-
 <style rel="stylesheet/scss" lang="scss" scoped>
-$dark_gray:#889aa4;
-$light_gray:#eee;
-.login-container {
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  background-image: url(../../assets/login_bg.jpg);
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  .login-form {
+  /*signin*/
+  .sign-in{
+    text-align: left;
+    height: 100px;
+    line-height: 100px;
+    background: #fff;
+    z-index: 1;
+  }
+  .sign-in img{
+    vertical-align: middle;
+    margin-left: 9%;
+    margin-top: -12px;
+    height: 71px;
+    width: 71px;
+  }
+  .sign-in .app-name{
+    font-size: 30px;
+    line-height: 100px;
+    color: #4a4a4a;
+  }
+  .big-box{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: url(../../assets/img/login_bd.jpg) no-repeat 50%;
+    background-size: cover;
+    margin-top: 100px;
+  }
+  .big-box .login-box{
     position: absolute;
+    top: -100px;
+    bottom: 0;
     left: 0;
     right: 0;
-    margin: 200px auto;
-    width:600px;
-    height:400px;
-    background:rgba(1,1,1,.23);
-    border-radius:12px;
-    text-align: center;
-    .logo{
-      width: 152px;
-      height: 47px;
-      margin: 18px 0;
-    }
+    width: 20.6%;
+    height: 28.4%;
+    min-width: 370px;
+    min-height: 264px;
+    margin: auto;
+    margin-right: 21%;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    background-clip: padding-box;
+    padding: 0 40px;
+    background: #fff;
+    border: 1px solid #eaeaea;
+    padding-bottom: 20px;
   }
-  .svg-container {
-    padding: 6px 5px 6px 15px;
-    color: $dark_gray;
-    vertical-align: middle;
-    width: 30px;
-    display: inline-block;
-    &_login {
-      font-size: 20px;
-    }
+  .big-box .login-box .title{
+    text-align: left;
+    font-size: 20px;
+    color: #4a4a4a;
+    padding: 20px 0;
+    font-weight: 500;
+    margin: 0;
   }
-  .title {
+  .big-box .login-box .el-form-item__content{
+    position: relative;
     font-size: 14px;
-    font-weight:400;
-    color:rgba(255,255,255,1);
-    line-height:22px;
-    margin: 0px auto 40px auto;
-    text-align: center;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 20px;
   }
-  .show-pwd {
+  .big-box .login-box .el-form-item__content .input_icon{
     position: absolute;
-    right: 10px;
-    top: 7px;
-    font-size: 16px;
-    color: $dark_gray;
-    cursor: pointer;
-    user-select: none;
+    top: 10px;
+    left: 13px;
+    width: 18px;
+    z-index: 1;
   }
-}
+  .big-box .login-box .el-input__inner{
+    -webkit-appearance: none;
+    background-color: #fff;
+    background-image: none;
+    border-radius: 4px;
+    border: 1px solid #dcdfe6;
+    box-sizing: border-box;
+    color: #606266;
+    display: inline-block;
+    font-size: inherit;
+    height: 40px;
+    line-height: 1;
+    outline: 0;
+    padding: 0 15px;
+    transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+    width: 100%;
+    padding-left: 40px;
+  }
+  .big-box .login-box .el-button{
+    color: #fff;
+    background-color: #1aad19;
+    border-color: #1aad19;
+    padding: 12px 20px;
+    font-size: 14px;
+    border-radius: 4px;
+    width: 100%;
+  }
+
 </style>
 
 

@@ -1,115 +1,214 @@
 <template>
   <div class="home">
-    <el-row :gutter="12" class="top">
-      <el-col :sm="12" :md="8">
-         <div class="top-item first">
-           <div class="top-item-title">
-              <span class="top-item-left">企业总数</span>
-              <span class="top-item-right">月</span>
-           </div>
-           <div class="top-item-main">
-              <h3 class="num">255.00</h3>
-              <p class="pro-title">同上期增长</p>
-             <el-progress :text-inside="true" :stroke-width="20" :percentage="70"></el-progress>
-           </div>
-         </div>
-      </el-col>
-      <el-col :sm="12" :md="8">
-        <div class="top-item second">
-          <div class="top-item-title">
-            <span class="top-item-left">企业总数</span>
-            <span class="top-item-right">年</span>
+      <div style="margin-top: 18px;">
+        <div class="card-group">
+
+          <div class="row box-card box-first">
+            <div class="col-md-12 card-title">名片状态</div>
+            <div class="col-md-6">
+              <p><i class="iconfont icon-ren"></i>员工总数</p>
+              <p class="box-card-num" id="amount">{{data.yuanNumber}}</p>
+            </div>
+            <div class="col-md-6">
+              <p><i class="iconfont icon-mingpian1"></i>可用名片/拥有名片</p>
+              <p class="box-card-num"><span id="canusecard">{{ enterprise.cardTotal - enterprise.cardUsed }}</span>/<span id="cardnum">{{enterprise.cardTotal}}</span></p>
+            </div>
           </div>
-          <div class="top-item-main">
-            <h3 class="num">255.00</h3>
-            <p class="pro-title">同上期增长</p>
-            <el-progress :text-inside="true" :stroke-width="20" :percentage="70"></el-progress>
-          </div>
-        </div>
-      </el-col>
-      <el-col :sm="12" :md="8">
-        <div class="top-item third">
-          <div class="top-item-title">
-            <span class="top-item-left">企业总数</span>
-            <span class="top-item-right">日</span>
-          </div>
-          <div class="top-item-main">
-            <h3 class="num">255.00</h3>
-            <p class="pro-title">同上期增长</p>
-            <el-progress :text-inside="true" :stroke-width="20" :percentage="70"></el-progress>
+          <div class="row box-card box-two">
+            <div class="col-md-12 card-title">账号状态</div>
+            <div class="col-md-4">
+              <p>已使用天数</p>
+              <p>剩余可用天数</p>
+              <p>已获取客户数</p>
+            </div>
+            <div class="col-md-3">
+              <p><span class="box-card-num" id="userDay">{{ [enterprise.payTime, Date.now()] | formatDurationAsDay }}</span>天</p>
+              <p><span class="box-card-num" id="restTime">{{ [Date.now(), enterprise.expireAt]  | formatDurationAsDay }}</span>天</p>
+              <p><span class="box-card-num customerNumber">{{ enterprise.cardUsed }}</span>人</p>
+            </div>
+            <div class="col-md-3 box-card-time">
+              <p><span id="payTime">{{ enterprise.payTime | formatDate }}</span>开通</p>
+              <p><span id="maturityTime">{{ enterprise.expireAt | formatDate }}</span>截止</p>
+            </div>
           </div>
         </div>
-      </el-col>
-    </el-row>
-    <el-row :gutter="12" class="echarts">
-      <el-col :span="16" style="height: 100%">
-        <div class="echarts-title">
-          <span class="echarts-title-t">活跃流量</span>
-          <ul class="time-list">
-            <li v-for="(item,index) in dateData" :class="dateIndex==index?'selected':''" @click="selectDate(index)">{{item}}</li>
-          </ul>
-        </div>
-        <line-chart :chart-data="lineChartData" style="height: calc(100% - 51px)"/>
-      </el-col>
-      <el-col :span="8" style="height: 100%;padding-top: 52px;">
-        <p class="rate-title">效果报告</p>
-       <div class="rate">
-         <p><span class="l-rate">65%</span><span class="r-rate">转化率(日同比20%)</span></p>
-         <el-progress :stroke-width="10" :percentage="70" :show-text="false" class=""></el-progress>
-       </div>
-        <div class="rate">
-          <p><span class="l-rate">65%</span><span class="r-rate">签到率(日同比20%)</span></p>
-          <el-progress :show-text="false" :stroke-width="10" :percentage="70"></el-progress>
-        </div>
-        <p class="rate-title">实时监控</p>
-       <div class="rate">
-         <p><span class="l-rate">65%</span><span class="r-rate">CPU使用率</span></p>
-         <el-progress :show-text="false" :stroke-width="10" :percentage="70"></el-progress>
-       </div>
-        <div class="rate memory-rate">
-          <p><span class="l-rate">65%</span><span class="r-rate">内存占用率</span></p>
-          <el-progress :show-text="false" :stroke-width="10" :percentage="70"></el-progress>
-        </div>
-      </el-col>
-    </el-row>
-    <el-row :gutter="12" style="margin-bottom: 48px;">
-      <el-col :xs="12" :sm="8"  :lg="6">
-         <div class="card card1">
-          <div style="position: absolute;bottom: 30px;left: 39px;">
-            <p>查看名片次数</p>
-            <h4>255.00</h4>
+      </div>
+
+      <div class="card-group">
+        <div class="box-card box-card-w100" style="padding-bottom: 100px;">
+          <div class="card-title">数据概览</div>
+          <div class="data-left">
+            <div class="data-left-box sjgl-title">
+              <div class="btn-group sjgl" data-toggle="buttons">
+                <label id="option1" class="btn btn-primary active">
+                  <input type="radio" name="options"  autocomplete="off" checked> 汇总
+                </label>
+                <label id="option2" class="btn btn-primary">
+                  <input type="radio" name="options"  autocomplete="off"> 昨日
+                </label>
+                <label id="option3" class="btn btn-primary">
+                  <input type="radio" name="options"  autocomplete="off"> 近7天
+                </label>
+                <label id="option4" class="btn btn-primary">
+                  <input type="radio" name="options"  autocomplete="off"> 近30天
+                </label>
+              </div>
+
+              <div class="sjgl-item sjgl-item1">
+                <div class="border1">
+                  <div class="border2">
+                    <div class="border3">
+                      <p>客户总数</p>
+                      <p class="first-num customerNumber">{{dataOverView.customerNumber}}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="border1">
+                  <div class="border2">
+                    <div class="border3">
+                      <p>跟进总数</p>
+                      <p class="first-num" id="followNumber">{{dataOverView.followNumber}}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="border1">
+                  <div class="border2">
+                    <div class="border3">
+                      <p>浏览总数</p>
+                      <p class="first-num" id="viewcardNumber">{{dataOverView.viewcardNumber}}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="border1">
+                  <div class="border2">
+                    <div class="border3">
+                      <p>被转发总数</p>
+                      <p class="first-num" id="forwardedNumber">{{dataOverView.forwardedNumber}}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="border1">
+                  <div class="border2">
+                    <div class="border3">
+                      <p>被保存总数</p>
+                      <p class="first-num" id="saveedNumber">{{dataOverView.saveedNumber}}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="border1">
+                  <div class="border2">
+                    <div class="border3">
+                      <p>被点赞总数</p>
+                      <p class="first-num" id="goodedNumber">{{dataOverView.goodedNumber}}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="data-left-box">
+              <div class="chart-select">
+                <div>数据指标</div>
+                <div class="btn-group select-box">
+                  <button type="button" data-toggle="dropdown" id="etit">
+                    客户总数
+                  </button>
+                  <ul class="dropdown-menu" role="menu" id="eclick">
+                    <li>
+                      <a href="#">客户总数</a>
+                    </li>
+                    <li>
+                      <a href="#">跟进总数</a>
+                    </li>
+                    <li>
+                      <a href="#">浏览总数</a>
+                    </li>
+                    <li>
+                      <a href="#">被转发总数</a>
+                    </li>
+                    <li>
+                      <a href="#">被保存总数</a>
+                    </li>
+                    <li>
+                      <a href="#">被点赞总数</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="btn-group chart-date" id="chooseday">
+                  <button type="button" class="btn btn-default active">7天</button>
+                  <button type="button" class="btn btn-default">15天</button>
+                </div>
+              </div>
+              <div class="chart-box">
+                <div style="width: 90%;height:400px;">
+                  <line-chart :chart-data="lineChartData" style="height: calc(100% - 51px)"/>
+                </div>
+              </div>
+            </div>
           </div>
-         </div>
-      </el-col>
-      <el-col :xs="12" :sm="8" :lg="6">
-        <div class="card card2">
-          <div style="position: absolute;bottom: 30px;left: 39px;">
-            <p>查看商城次数</p>
-            <h4>255.00</h4>
-          </div>
         </div>
-      </el-col>
-      <el-col :xs="12" :sm="8" :lg="6">
-        <div class="card card3">
-          <div style="position: absolute;bottom: 30px;left: 39px;">
-            <p>查看动态次数</p>
-            <h4>255.00</h4>
+      </div>
+
+      <div class="card-group">
+        <div class="box-card box-card-w100">
+          <div class="card-title">常用功能</div>
+
+          <div class="cygn">
+            <a>
+              <div class="row">
+                <div class="col-md-2"><i class="iconfont icon-haofangtuo400iconfontpengyouquan"></i></div>
+                <div class="col-md-10">
+                  <p>发布企业动态</p>
+                  <p>快速发布企业最新动态、资讯</p>
+                </div>
+              </div>
+            </a>
+            <a>
+              <div class="row">
+                <div class="col-md-2"><i class="iconfont icon-lifangtilitiduomiantifangkuai"></i></div>
+                <div class="col-md-10">
+                  <p>公司产品管理</p>
+                  <p>快速上传、编辑公司产品</p>
+                </div>
+              </div>
+            </a>
+            <a>
+              <div class="row">
+                <div class="col-md-2"><i class="iconfont icon-fangchan"></i></div>
+                <div class="col-md-10">
+                  <p>官网编辑</p>
+                  <p>对小程序官网进行模块化编辑</p>
+                </div>
+              </div>
+            </a>
+            <a>
+              <div class="row">
+                <div class="col-md-2"><i class="iconfont icon-yuangongguanli"></i></div>
+                <div class="col-md-10">
+                  <p>新增员工</p>
+                  <p>在企业通讯录快速新增员工</p>
+                </div>
+              </div>
+            </a>
+            <a>
+              <div class="row">
+                <div class="col-md-2"><i class="iconfont icon-leidatance"></i></div>
+                <div class="col-md-10">
+                  <p>雷达权限管理</p>
+                  <p>管理员工名片和雷达的启用/停用状态</p>
+                </div>
+              </div>
+            </a>
+
           </div>
+
         </div>
-      </el-col>
-      <el-col :xs="12" :sm="8" :lg="6">
-        <div class="card card4">
-          <div style="position: absolute;bottom: 30px;left: 39px;">
-            <p>查看官网次数</p>
-            <h4>255.00</h4>
-          </div>
-        </div>
-      </el-col>
-    </el-row>
-  </div>
+      </div>
+    </div>
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
   import LineChart from './components/LineChart'
   const lineChartData = {
     newVisitis: {
@@ -121,8 +220,39 @@
     components:{
       LineChart,
     },
+    computed: {
+      ...mapGetters([
+        'enterprise',
+      ])
+    },
+    filters: {
+      formatDurationAsDay ([from, to]) {
+        return Math.round((to - from) / ( 24 * 3600 * 1000 ))
+      },
+      formatDate (timestamp) {
+        const date = new Date(timestamp)
+        const year = date.getFullYear()
+        const month = date.getMonth() + 1
+        const day = date.getDate()
+
+        return [year, month, day].map(n => {
+          n = n.toString()
+          return n[1] ? n : '0' + n
+        }).join('-')
+      }
+    },
     data() {
       return {
+        data:{},
+        dataOverView:{
+          customerNumber:0,
+          forwardedNumber:0,
+          viewcardNumber:0,
+          followNumber:0,
+          saveedNumber:0,
+          goodedNumber:0
+        },
+        daynum:'1',
         lineChartData: lineChartData.newVisitis,
         dateData:['日','月','年'],
         dateIndex:0
@@ -131,197 +261,368 @@
     methods: {
       selectDate(index){
         this.dateIndex=index
-      }
+      },
+     getAllData(){
+       // this.$store.dispatch('GetHomeData', '7').then((res) => {
+       //   if(res.code && res.code==500){
+       //     this.$message({
+       //       message:res.message,
+       //       type: 'error',
+       //       duration: 5 * 1000
+       //     })
+       //   }else{
+       //     this.data=res
+       //     this.dataOverView.customerNumber=res.customerNumber
+       //     this.dataOverView.forwardedNumber=res.forwardedNumber
+       //     this.dataOverView.viewcardNumber=res.viewcardNumber
+       //     this.dataOverView.followNumber=res.followNumber
+       //     this.dataOverView.saveedNumber=res.saveedNumber
+       //     this.dataOverView.goodedNumber=res.goodedNumber
+       //   }
+       // }).catch((err) => {
+       //   console.log(err)
+       // })
+     },
+    getDataOverView(){
+        console.log(this.daynum)
+      this.$store.dispatch('GetDataOverView', this.daynum).then((res) => {
+        if(res.code && res.code==500){
+          this.$message({
+            message:res.message,
+            type: 'error',
+            duration: 5 * 1000
+          })
+        }else{
+          this.dataOverView.customerNumber=res.customerNumber
+          this.dataOverView.forwardedNumber=res.forwardedNumber
+          this.dataOverView.viewcardNumber=res.viewcardNumber
+          this.dataOverView.followNumber=res.followNumber
+          this.dataOverView.saveedNumber=res.saveedNumber
+          this.dataOverView.goodedNumber=res.goodedNumber
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
+    },
+
+
+    },
+  mounted:function(){
+      var self =this
+    $("#chooseday button").click(function() {
+      $(this).addClass("active").siblings().removeClass("active");
+    });
+    $("#eclick li a").click(function() {
+      var tt = $(this).html()
+      $("#etit").html(tt);
+    });
+    $("#option1").click(function() {
+      self.daynum = 1;
+      self.getDataOverView();
+    });
+    $("#option2").click(function() {
+      self.daynum = 2;
+      self.getDataOverView()
+    });
+    $("#option3").click(function() {
+      self.daynum = 7;
+      self.getDataOverView()
+    });
+    $("#option4").click(function() {
+      self.daynum = 30;
+      self.getDataOverView()
+    });
+  },
+    created(){
+      this.getAllData()
+      // this.getDataOverView()
     }
 }
 </script>
 
 <style scoped>
-  p{
-    margin: 0;
+  .home{
+    background-color: #f8f9fb;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow: auto;
+    height: auto;
+    min-width: 100%;
+    float: left;
+    overflow-x: hidden;
   }
-  .top{
-    margin: 20px 0px 0;
+  .card-group{
+    display: flex;
+    justify-content: space-between;
+    /*margin-left: 0px;*/
   }
-  .top-item{
-    background: white;
-    border-radius:8px;
-    box-shadow:0px 0px 2px 2px rgba(35,51,95,0.1);
-    margin-bottom: 20px;
-  }
-.top-item-title{
-  line-height: 53px;
-  border-bottom: 1px solid rgba(241,241,241,1);
-  padding: 0 16px 0 48px;
-}
-  .top-item-left{
-    font-size:18px;
-    font-weight:300;
-    color:rgba(34,34,34,1);
-  }
-  .top-item-right{
-    float: right;
-    width:36px;
-    height:27px;
-    line-height: 27px;
-    text-align: center;
-    margin-top: 12px;
-    border-radius:4px;
-    font-size:14px;
-    color:rgba(255,255,255,1);
-  }
-  .first .top-item-right{
-    background:rgba(54,73,126,1);
-  }
-  .second .top-item-right{
-    background:rgba(0,150,136,1);
-  }
-  .third .top-item-right{
-    background:rgba(251,154,60,1);
-  }
-  .top-item-main{
-    padding: 0 16px 29px 48px;
-  }
-  .top-item .num{
-    font-size:76px;
-    font-weight:400;
-    line-height: 144px;
-    margin: 0;
-  }
-  .top-item.first .num{
-    color:rgba(134,166,255,1);
-  }
-  .top-item.second .num{
-    color:rgba(94,211,200,1);
-  }
-  .top-item.third .num{
-    color:rgba(255,208,118,1);
-  }
-  .pro-title{
+  .card-group .box-card{
+    width: 47%;
+    margin-bottom: 30px;
+    margin-right: 63px;
+    margin-left: 20px;
+    border: 1px solid #f0f0f0;
+    -webkit-box-shadow: 0 2px 8px 0 hsla(0,0%,89%,.5);
+    box-shadow: 0 2px 8px 0 hsla(0,0%,89%,.5);
+    background-color: #fff;
+    color: #303133;
+    border-radius: 4px;
+    padding: 38px 40px;
     font-size: 16px;
-    font-weight:400;
-    color:rgba(34,34,34,1);
-    margin-bottom: 14px;
   }
-  .echarts{
-    width:100%;
-    height:477px;
-    background:rgba(255,255,255,1);
-    border-radius:8px;
-    box-shadow:0px 0px 2px 2px rgba(35,51,95,0.1);
-    padding: 0 43px 0 48px;
-    margin-left: 0!important;
-    margin-right: 0!important;
+  .card-group .box-first{
+    margin-right: 15px;
   }
-  .time-list{
-    color: white;
-    height:26px;
-    line-height: 26px;
-    float: right;
-    margin: 0;
-    background: rgba(138,162,243,1);
-    padding: 0;
-    font-size: 0;
-    margin:15px 10px 0 0;
-    overflow: hidden;
-    border-radius:4px;
+  .card-group .box-card .card-title{
+    font-size: 20px;
+    text-align: left;
+    margin-top: 0;
   }
-  .time-list li{
-    font-size: 16px;
-    width:30px;
-    list-style: none;
-    display: inline-block;
-    text-align: center;
+  .card-group .box-card .iconfont{
+    font-size: 20px;
+    margin-right: 15px;
   }
-  .time-list .selected{
-    background:rgba(80,114,226,1);
+  .card-group .box-first p{
+    margin: 30px 0 0 0;
   }
-  .time-list li:nth-child(2){
-    border-left: 1px solid white;
-    border-right: 1px solid white;
+  .card-group .box-card .box-card-num{
+    font-family: PingFangSC-Medium;
+    font-size: 30px;
+    color: #4877c1;
+    letter-spacing: 0;
   }
-  .echarts-title{
-    height: 51px;
-    line-height: 51px;
-    font-weight:300;
+  .card-group .box-two p{
+    line-height: 40px;
+    margin-bottom: 0;
   }
-  .echarts-title-t{
-    font-size:18px;
-    color:rgba(34,34,34,1);
-  }
-  .rate-title{
-    font-size:16px;
-    font-weight:400;
-    color:rgba(0,0,0,1);
-    margin-bottom: 20px;
-  }
-  .rate p{
-    margin-bottom: 10px;
-  }
-  .rate p:after{
-    display: table;
-    content: '';
-    clear: both;
-  }
-  .l-rate{
-    font-size: 24px;
-    font-weight:300;
-    color:rgba(34,34,34,1);
-  }
-  .r-rate{
-    font-size: 16px;
-    font-weight:300;
-    color:rgba(102,102,102,1);
-    float: right;
-    margin-top: 10px;
-  }
-  .rate{
-    margin-bottom: 35px;
-  }
-  .card{
-    height: 240px;
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
+  .card-group .box-two>*{
     margin-top: 20px;
-    color: white;
-    font-weight:300;
-    position: relative;
   }
-  .card p{
-    font-size:16px;
-    margin-bottom: 20px;
+  .card-group .box-two .box-card-num{
+    vertical-align: middle;
+    margin-right: 15px;
   }
-  .card h4{
-    font-size:48px;
+  .card-group .box-two .box-card-time{
+    color: #7d7d7d;
+    font-size: 14px;
+  }
+  .card-group .box-card-w100{
+    width: 100%;
+  }
+  .data-left{
+    display: flex;
+    justify-content: space-between;
+  }
+  .data-left .data-left-box{
+    width: 50%;
+    margin-top: 38px;
+  }
+  .data-left .sjgl-title{
+    text-align: left;
+  }
+  .data-left .sjgl-title .sjgl .btn{
+    padding: 12px 20px;
+  }
+  .data-left .sjgl-title .sjgl .btn-primary{
+    background: #fff;
+    border: 1px solid #dcdfe6;
+    color: #606266;
+  }
+  .data-left .sjgl-title .sjgl .active{
+    background: #fff!important;
+    border: 1px solid #dcdfe6!important;
+    color: #008CC8!important;
+    box-shadow: none!important;
+    font-weight: 600;
+  }
+  .data-left .sjgl-title .sjgl .btn-primary:hover,.sjgl .active:hover{
+    color: #008CC8;
+    /*font-weight: 600;*/
+    background: #fff;
+    border: 1px solid #dcdfe6;
+  }
+  .data-left .sjgl-item{
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    text-align: center;
+    margin: 30px 0 0 10px;
+  }
+  .data-left .sjgl-item .border1{
+    width: 30%;
+    margin: 3px;
+    border: 1px solid rgba(72,119,193,.1);
+    min-width: 130px;
+    min-height: 110px;
+  }
+  .data-left .sjgl-item .border2{
+    margin: 3px;
+    border: 1px solid rgba(72,119,193,.3);
+    min-height: 105px;
+  }
+  .data-left .sjgl-item .border3{
+    margin: 3px;
+    border: 2px solid rgba(72,119,193,.6);
+    height: 11vh;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: distribute;
+    justify-content: space-around;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    padding: 15px 0;
+    min-height: 96px;
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+  }
+  .data-left .sjgl-item .border3 p{
+    margin-bottom: 0;
+  }
+  .data-left .sjgl-item .border3 p.first-num{
+    font-family: PingFangSC-Semibold;
+    font-size: 30px;
+    color: #4e4e4e;
+    line-height: 50px;
+  }
+  .data-left .sjgl-item .border3 p:nth-child(3){
+    font-family: PingFangSC-Regular;
+    font-size: 14px;
+    color: #7d7d7d;
+    letter-spacing: 0;
+    line-height: 26px;
+  }
+  .data-left .sjgl-item .border3 p.per-red{
+    color: #de0200;
+  }
+  .data-left .sjgl-item .border3 p.per-green{
+    color: #09a700;
+  }
+  .data-left .sjgl-item:not(.sjgl-item1){
+    display: none;
+  }
+  .chart-select{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    color: #606266;
+    font-size: 14px;
+  }
+  .chart-select .select-box{
+    width: 30%;
+    display: flex;
+  }
+  .chart-select .select-box>button{
+    width: 80%;
+    margin: 0 auto!important;
+    padding: 10px 15px;
+    background-color: #fff;
+    border-radius: 4px;
+    border: 1px solid #dcdfe6;
+    color: #606266;
+    text-align: left;
+  }
+  .chart-select .select-box>button:hover{
+    border-color: #c0c4cc;
+  }
+  .chart-select .select-box>button span{
+    float: right;
+  }
+  .chart-select .select-box>ul{
+    width: 80%;
+    left: 10%;
+    border: 1px solid #e4e7ed;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    margin: 5px 0;
+  }
+  .chart-select .select-box>ul li{
+    height: 34px;
+    line-height: 34px;
+  }
+  .chart-select .select-box>ul li a{
+    color: #606266;
+    line-height: inherit;
+  }
+  .chart-date .btn-default{
+    border: 1px solid #dcdfe6;
+    padding: 10px 20px;
+  }
+  .chart-date .btn-default:hover,.chart-date .btn-default:focus{
+    background: #fff!important;
+    border: 1px solid #dcdfe6;
+    color: #008CC8;
+    box-shadow: none;
+  }
+  .chart-date .active{
+    background: #fff!important;
+    border: 1px solid #dcdfe6!important;
+    color: #008CC8!important;
+    box-shadow: none!important;
+    font-weight: 600;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /*three*/
+  .cygn{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .cygn>a{
+    width: 48%;
+    margin-top: 32px;
+  }
+  .cygn>a:hover{
+    background-color: hsla(220,3%,78%,.3);
+  }
+  .cygn .row{
     margin: 0;
+    border: 1px solid #e1e1e1;
+    padding: 25px 0 20px;
   }
-  .card1{
-    background-image: url(../../assets/home_bg1.png);
+  .cygn .row .col-md-2{
+    text-align: right;
+    padding-right: 20px;
+    margin-top: -10px;
   }
-  .card2{
-    background-image: url(../../assets/home_bg2.png);
+  .cygn .row .col-md-2 i{
+    color: #008CC8;
+    font-size: 50px;
+    margin-right: 0;
   }
-  .card3{
-    background-image: url(../../assets/home_bg3.png);
+  .cygn .row .col-md-10{
+    text-align: left;
   }
-  .card4{
-    background-image: url(../../assets/home_bg4.png);
+  .cygn .row .col-md-10 p:first-child{
+    color: #6487bd;
+    font-size: 18px;
   }
-</style>
-<style>
-  .first .el-progress-bar__inner{
-  background: linear-gradient(98deg,rgba(0,198,255,1),rgba(40,237,211,1));
+  .cygn .row .col-md-10 p:last-child{
+    color: #646464;
+    font-size: 14px;
+    margin-top: 10px!important;
+    margin-bottom: 0;
   }
-  .second .el-progress-bar__inner{
-    background: linear-gradient(98deg,rgba(0,150,136,1),rgba(93,245,147,1));
+
+
+
+  .mui-switch:checked:before {
+    left: 21px;
   }
-  .third .el-progress-bar__inner{
-    background: linear-gradient(98deg,rgba(255,120,38,1),rgba(249,236,23,1));
-  }
-  .rate .el-progress-bar__inner{
-    background: linear-gradient(98deg,rgba(95,184,120,1),rgba(113,234,147,1));
-  }
-  .memory-rate .el-progress-bar__inner{
-    background: linear-gradient(98deg,rgba(255,87,34,1),rgba(249,153,119,1));
-  }
+
 </style>
